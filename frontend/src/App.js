@@ -1,21 +1,30 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { FaUsers, FaBuilding, FaTachometerAlt } from 'react-icons/fa';
+import { FaUsers, FaBuilding, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa';
 import EmployeeList from './components/EmployeeList';
 import EmployeeForm from './components/EmployeeForm';
 import DepartmentList from './components/DepartmentList';
 import DepartmentForm from './components/DepartmentForm';
 import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import Register from './components/Register';
+import { authService } from './services/authService';
 
 function Navigation() {
   const location = useLocation();
+  const currentUser = authService.getCurrentUser();
   
   const navItems = [
     { path: '/', label: 'Dashboard', icon: FaTachometerAlt },
     { path: '/employees', label: 'Employees', icon: FaUsers },
     { path: '/departments', label: 'Departments', icon: FaBuilding }
   ];
+  
+  const handleLogout = async () => {
+    await authService.logout();
+    window.location.href = '/login';
+  };
   
   return (
     <nav className="nav">
@@ -29,28 +38,87 @@ function Navigation() {
           {label}
         </Link>
       ))}
+      <button 
+        onClick={handleLogout}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          padding: '0.75rem 1.5rem',
+          borderRadius: '25px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          fontSize: '0.9rem',
+          fontWeight: '500'
+        }}
+      >
+        <FaSignOutAlt className="icon" />
+        Logout ({currentUser?.username})
+      </button>
     </nav>
   );
 }
 
+// Protected Route Component
+function ProtectedRoute({ children }) {
+  const isAuthenticated = authService.isAuthenticated();
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+}
+
 function App() {
+  const isAuthenticated = authService.isAuthenticated();
+  
   return (
     <Router>
       <div className="container">
-        <header className="header">
-          <h1>Employee Management System</h1>
-          <Navigation />
-        </header>
+        {isAuthenticated && (
+          <header className="header">
+            <h1>Employee Management System</h1>
+            <Navigation />
+          </header>
+        )}
         
         <main>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/employees" element={<EmployeeList />} />
-            <Route path="/employees/new" element={<EmployeeForm />} />
-            <Route path="/employees/edit/:id" element={<EmployeeForm />} />
-            <Route path="/departments" element={<DepartmentList />} />
-            <Route path="/departments/new" element={<DepartmentForm />} />
-            <Route path="/departments/edit/:id" element={<DepartmentForm />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/employees" element={
+              <ProtectedRoute>
+                <EmployeeList />
+              </ProtectedRoute>
+            } />
+            <Route path="/employees/new" element={
+              <ProtectedRoute>
+                <EmployeeForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/employees/edit/:id" element={
+              <ProtectedRoute>
+                <EmployeeForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/departments" element={
+              <ProtectedRoute>
+                <DepartmentList />
+              </ProtectedRoute>
+            } />
+            <Route path="/departments/new" element={
+              <ProtectedRoute>
+                <DepartmentForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/departments/edit/:id" element={
+              <ProtectedRoute>
+                <DepartmentForm />
+              </ProtectedRoute>
+            } />
           </Routes>
         </main>
         
