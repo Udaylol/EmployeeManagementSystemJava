@@ -21,38 +21,58 @@ public class EmployeeController {
     // GET /employees - Get all employees
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = employeeService.getAllEmployees();
-        return ResponseEntity.ok(employees);
+        try {
+            List<Employee> employees = employeeService.getAllEmployees();
+            return ResponseEntity.ok(employees);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // GET /employees/{id} - Get employee by ID
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        Optional<Employee> employee = employeeService.getEmployeeById(id);
-        return employee.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Optional<Employee> employee = employeeService.getEmployeeById(id);
+            return employee.map(ResponseEntity::ok)
+                         .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // GET /employees/email/{email} - Get employee by email
     @GetMapping("/email/{email}")
     public ResponseEntity<Employee> getEmployeeByEmail(@PathVariable String email) {
-        Optional<Employee> employee = employeeService.getEmployeeByEmail(email);
-        return employee.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Optional<Employee> employee = employeeService.getEmployeeByEmail(email);
+            return employee.map(ResponseEntity::ok)
+                         .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    // GET /employees/department/{departmentId} - Get employees by department
+    // GET /employees/department/{departmentId} - Get employees by department ID
     @GetMapping("/department/{departmentId}")
-    public ResponseEntity<List<Employee>> getEmployeesByDepartment(@PathVariable Long departmentId) {
-        List<Employee> employees = employeeService.getEmployeesByDepartmentId(departmentId);
-        return ResponseEntity.ok(employees);
+    public ResponseEntity<List<Employee>> getEmployeesByDepartmentId(@PathVariable Long departmentId) {
+        try {
+            List<Employee> employees = employeeService.getEmployeesByDepartmentId(departmentId);
+            return ResponseEntity.ok(employees);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // GET /employees/search/{name} - Search employees by name
     @GetMapping("/search/{name}")
     public ResponseEntity<List<Employee>> searchEmployeesByName(@PathVariable String name) {
-        List<Employee> employees = employeeService.searchEmployeesByName(name);
-        return ResponseEntity.ok(employees);
+        try {
+            List<Employee> employees = employeeService.searchEmployeesByName(name);
+            return ResponseEntity.ok(employees);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // POST /employees - Create new employee
@@ -63,6 +83,9 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("An error occurred while creating the employee");
         }
     }
 
@@ -74,6 +97,9 @@ public class EmployeeController {
             return ResponseEntity.ok(updatedEmployee);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("An error occurred while updating the employee");
         }
     }
 
@@ -82,9 +108,12 @@ public class EmployeeController {
     public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         try {
             employeeService.deleteEmployee(id);
-            return ResponseEntity.ok("Employee deleted successfully");
+            return ResponseEntity.ok().body("Employee deleted successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("An error occurred while deleting the employee");
         }
     }
 
@@ -96,20 +125,31 @@ public class EmployeeController {
             return ResponseEntity.ok(updatedEmployee);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("An error occurred while assigning employee to department");
         }
     }
 
-    // GET /employees/check/{id} - Check if employee exists
-    @GetMapping("/check/{id}")
-    public ResponseEntity<Boolean> checkEmployeeExists(@PathVariable Long id) {
-        boolean exists = employeeService.employeeExists(id);
-        return ResponseEntity.ok(exists);
+    // GET /employees/exists/{id} - Check if employee exists
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> employeeExists(@PathVariable Long id) {
+        try {
+            boolean exists = employeeService.employeeExists(id);
+            return ResponseEntity.ok(exists);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    // GET /employees/check/email/{email} - Check if employee exists by email
-    @GetMapping("/check/email/{email}")
-    public ResponseEntity<Boolean> checkEmployeeExistsByEmail(@PathVariable String email) {
-        boolean exists = employeeService.employeeExistsByEmail(email);
-        return ResponseEntity.ok(exists);
+    // GET /employees/exists/email/{email} - Check if employee exists by email
+    @GetMapping("/exists/email/{email}")
+    public ResponseEntity<Boolean> employeeExistsByEmail(@PathVariable String email) {
+        try {
+            boolean exists = employeeService.employeeExistsByEmail(email);
+            return ResponseEntity.ok(exists);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

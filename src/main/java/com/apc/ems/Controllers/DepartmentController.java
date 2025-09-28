@@ -21,24 +21,36 @@ public class DepartmentController {
     // GET /departments - Get all departments
     @GetMapping
     public ResponseEntity<List<Department>> getAllDepartments() {
-        List<Department> departments = departmentService.getAllDepartments();
-        return ResponseEntity.ok(departments);
+        try {
+            List<Department> departments = departmentService.getAllDepartments();
+            return ResponseEntity.ok(departments);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // GET /departments/{id} - Get department by ID
     @GetMapping("/{id}")
     public ResponseEntity<Department> getDepartmentById(@PathVariable Long id) {
-        Optional<Department> department = departmentService.getDepartmentById(id);
-        return department.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Optional<Department> department = departmentService.getDepartmentById(id);
+            return department.map(ResponseEntity::ok)
+                           .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // GET /departments/name/{name} - Get department by name
     @GetMapping("/name/{name}")
     public ResponseEntity<Department> getDepartmentByName(@PathVariable String name) {
-        Optional<Department> department = departmentService.getDepartmentByName(name);
-        return department.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Optional<Department> department = departmentService.getDepartmentByName(name);
+            return department.map(ResponseEntity::ok)
+                           .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // POST /departments - Create new department
@@ -49,6 +61,9 @@ public class DepartmentController {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("An error occurred while creating the department");
         }
     }
 
@@ -60,6 +75,9 @@ public class DepartmentController {
             return ResponseEntity.ok(updatedDepartment);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("An error occurred while updating the department");
         }
     }
 
@@ -68,23 +86,34 @@ public class DepartmentController {
     public ResponseEntity<?> deleteDepartment(@PathVariable Long id) {
         try {
             departmentService.deleteDepartment(id);
-            return ResponseEntity.ok("Department deleted successfully");
+            return ResponseEntity.ok().body("Department deleted successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("An error occurred while deleting the department");
         }
     }
 
-    // GET /departments/check/{id} - Check if department exists
-    @GetMapping("/check/{id}")
-    public ResponseEntity<Boolean> checkDepartmentExists(@PathVariable Long id) {
-        boolean exists = departmentService.departmentExists(id);
-        return ResponseEntity.ok(exists);
+    // GET /departments/exists/{id} - Check if department exists
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> departmentExists(@PathVariable Long id) {
+        try {
+            boolean exists = departmentService.departmentExists(id);
+            return ResponseEntity.ok(exists);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    // GET /departments/check/name/{name} - Check if department exists by name
-    @GetMapping("/check/name/{name}")
-    public ResponseEntity<Boolean> checkDepartmentExistsByName(@PathVariable String name) {
-        boolean exists = departmentService.departmentExistsByName(name);
-        return ResponseEntity.ok(exists);
+    // GET /departments/exists/name/{name} - Check if department exists by name
+    @GetMapping("/exists/name/{name}")
+    public ResponseEntity<Boolean> departmentExistsByName(@PathVariable String name) {
+        try {
+            boolean exists = departmentService.departmentExistsByName(name);
+            return ResponseEntity.ok(exists);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
