@@ -24,6 +24,16 @@ public class EmployeeService {
         if (employeeRepository.existsByEmail(employee.getEmail())) {
             throw new RuntimeException("Employee with email '" + employee.getEmail() + "' already exists");
         }
+        
+        // Ensure department is fetched from DB and set
+        if (employee.getDepartment() != null && employee.getDepartment().getId() != null) {
+            Department department = departmentRepository.findById(employee.getDepartment().getId())
+                    .orElseThrow(() -> new RuntimeException("Department not found with id: " + employee.getDepartment().getId()));
+            employee.setDepartment(department);
+        } else {
+            employee.setDepartment(null);
+        }
+        
         return employeeRepository.save(employee);
     }
 

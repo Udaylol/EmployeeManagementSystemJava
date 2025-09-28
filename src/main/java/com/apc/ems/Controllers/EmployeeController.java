@@ -15,8 +15,12 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class EmployeeController {
 
-    @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    public void setEmployeeService(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     // GET /employees - Get all employees
     @GetMapping
@@ -65,7 +69,7 @@ public class EmployeeController {
     }
 
     // GET /employees/search/{name} - Search employees by name
-    @GetMapping("/search/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<List<Employee>> searchEmployeesByName(@PathVariable String name) {
         try {
             List<Employee> employees = employeeService.searchEmployeesByName(name);

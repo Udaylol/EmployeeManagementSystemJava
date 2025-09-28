@@ -1,5 +1,6 @@
 package com.apc.ems.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,5 +31,6 @@ public class Employee {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
+    @JsonBackReference
     private Department department;
 }
