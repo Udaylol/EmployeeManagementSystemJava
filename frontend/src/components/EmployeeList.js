@@ -95,6 +95,12 @@ function EmployeeList() {
     }
   };
 
+  const handleClear = () => {
+    setSearchTerm('');
+    setSelectedDepartment('');
+    fetchData();
+  };
+
   const filteredEmployees = employees.filter(employee => {
     const matchesSearch = !searchTerm || 
       employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -140,20 +146,14 @@ function EmployeeList() {
             <FaSearch className="icon" />
             Search
           </button>
-          <button className="btn btn-secondary" onClick={fetchData}>
+          <button className="btn btn-secondary" onClick={handleClear}>
             Clear
           </button>
         </div>
 
         <div className="search-bar">
           <div style={{ position: 'relative', flex: 1 }}>
-            <FaFilter style={{ 
-              position: 'absolute', 
-              left: '12px', 
-              top: '50%', 
-              transform: 'translateY(-50%)', 
-              color: '#666' 
-            }} />
+            
             <select
               value={selectedDepartment}
               onChange={(e) => setSelectedDepartment(e.target.value)}
@@ -168,8 +168,6 @@ function EmployeeList() {
             </select>
           </div>
           <button className="btn" onClick={handleDepartmentFilter}>
-            <FaFilter className="icon" />
-            Filter
           </button>
         </div>
 

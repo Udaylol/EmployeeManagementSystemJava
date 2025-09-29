@@ -63,6 +63,11 @@ function DepartmentList() {
     setDepartments(filtered);
   };
 
+  const handleClear = () => {
+    setSearchTerm('');
+    fetchDepartments();
+  };
+
   const filteredDepartments = departments.filter(department => {
     if (!searchTerm) return true;
     return department.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -103,7 +108,7 @@ function DepartmentList() {
             <FaSearch className="icon" />
             Search
           </button>
-          <button className="btn btn-secondary" onClick={fetchDepartments}>
+          <button className="btn btn-secondary" onClick={handleClear}>
             Clear
           </button>
         </div>
